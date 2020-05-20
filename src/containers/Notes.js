@@ -5,7 +5,7 @@ import { onError } from "../libs/errorLib";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
-import { s3Upload } from "../libs/awsLib";
+import { s3Upload, s3Delete } from "../libs/awsLib";
 import "./Notes.css";
 
 export default function Notes() {
@@ -77,6 +77,9 @@ export default function Notes() {
 
     try {
       if (file.current) {
+        if (file.current.name !== formatFilename(note.attachment)) {
+          await s3Delete(note.attachment)
+        }
         attachment = await s3Upload(file.current);
       }
 
@@ -110,6 +113,7 @@ export default function Notes() {
 
     try {
       await deleteNote();
+      await s3Delete(note.attachment);
       history.push("/");
     } catch (e) {
       onError(e);
