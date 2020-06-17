@@ -1,16 +1,52 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import asyncComponent from "./components/AsyncComponent";
 import AppliedRoute from "./components/AppliedRoute";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
+import Loadable from 'react-loadable';
 
-const AsyncHome = asyncComponent(() => import("./containers/Home"));
-const AsyncLogin = asyncComponent(() => import("./containers/Login"));
-const AsyncNotes = asyncComponent(() => import("./containers/Notes"));
-const AsyncSignup = asyncComponent(() => import("./containers/Signup"));
-const AsyncNewNote = asyncComponent(() => import("./containers/NewNote"));
-const AsyncNotFound = asyncComponent(() => import("./containers/NotFound"));
+const MyLoadingComponent = ({isLoading, error}) => {
+  // Handle the loading state
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  // Handle the error state
+  else if (error) {
+    return <div>Sorry, there was a problem loading the page.</div>;
+  }
+  else {
+    return null;
+  }
+};
+
+const AsyncHome = Loadable({
+  loader: () => import("./containers/Home"),
+  loading: MyLoadingComponent
+});
+const AsyncLogin = Loadable({
+  loader: () => import("./containers/Login"),
+  loading: MyLoadingComponent
+});
+const AsyncNotes = Loadable({
+  loader: () => import("./containers/Notes"),
+  loading: MyLoadingComponent
+});
+const AsyncSignup = Loadable({
+  loader: () => import("./containers/Signup"),
+  loading: MyLoadingComponent
+});
+const AsyncNewNote = Loadable({
+  loader: () => import("./containers/NewNote"),
+  loading: MyLoadingComponent
+});
+const AsyncNotFound = Loadable({
+  loader: () => import("./containers/NotFound"),
+  loading: MyLoadingComponent
+});
+const AsyncSettings = Loadable({
+  loader: () => import("./containers/Settings"),
+  loading: MyLoadingComponent
+});
 
 export default ({ childProps }) =>
   <Switch>
@@ -42,6 +78,12 @@ export default ({ childProps }) =>
       path="/notes/:id"
       exact
       component={AsyncNotes}
+      props={childProps}
+    />
+    <AuthenticatedRoute
+      path="/settings"
+      exact
+      component={AsyncSettings}
       props={childProps}
     />
     {/* Finally, catch all unmatched routes */}
